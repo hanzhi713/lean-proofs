@@ -68,37 +68,35 @@ example : (p → q) → (¬q → ¬p) :=
         show false, from notq pfq
     end
 
+-- these require classical reasoning
 open classical
-
 theorem double_neg_elim: ∀ { P }, ¬¬P → P := 
 begin
-  assume P : Prop,
-  assume pfNotNotP : ¬¬P,
-  cases em P with pfP pfnP,
-    show P, from pfP,
+    assume P : Prop,
+    assume pfNotNotP : ¬¬P,
+    cases em P with pfP pfnP,
+        show P, from pfP,
 
-    have f: false := pfNotNotP pfnP,
-    show P, from false.elim f
+        have f: false := pfNotNotP pfnP,
+        show P, from false.elim f
 end
 
--- these require classical reasoning
-example : (p → r ∨ s) → ((p → r) ∨ (p → s)) := sorry
+example : (p → r ∨ s) → ((p → r) ∨ (p → s)) :=
+begin
+    sorry
+end
 
 example : ¬(p ∧ q) → ¬p ∨ ¬q := 
 begin
     assume notPandQ,
     cases em p with pfP pfnotP,
     cases em q with pfQ pfnotQ,
-    show ¬p ∨ ¬q, from false.elim (notPandQ (and.intro pfP pfQ)),
-    show ¬p ∨ ¬q, from or.inr pfnotQ,
-    show ¬p ∨ ¬q, from or.inl pfnotP,
+        show ¬p ∨ ¬q, from false.elim (notPandQ (and.intro pfP pfQ)),
+        show ¬p ∨ ¬q, from or.inr pfnotQ,
+        show ¬p ∨ ¬q, from or.inl pfnotP,
 end
 
-example : ¬(p → q) → p ∧ ¬q := sorry
-
-example : (p → q) → (¬p ∨ q) := sorry
-
-example : (¬q → ¬p) → (p → q) := sorry
+-- I don't use "example" here because it's used in a following proof
 theorem pf_by_contrapositive: (¬q → ¬p) → (p → q) := 
     begin
         assume nqnp: ¬q → ¬p,
@@ -111,8 +109,30 @@ theorem pf_by_contrapositive: (¬q → ¬p) → (p → q) :=
             end,
         show q, from double_neg_elim nnq
     end
-
 #check pf_by_contrapositive
+
+example : ¬(p → q) → p ∧ ¬q :=
+begin
+    assume notpq,
+    cases em p with pfp pfnp,
+    cases em q with pfq pfnq,
+        have pq : p → q := λ p, pfq,
+        show p ∧ ¬q, from false.elim (notpq pq),
+
+        show p ∧ ¬q, from and.intro pfp pfnq,
+        
+        have nqnp : ¬q → ¬p := λ nq, pfnp,
+        have pq : p → q := pf_by_contrapositive p q nqnp,
+        show p ∧ ¬q, from false.elim (notpq pq)
+end
+
+example : (p → q) → (¬p ∨ q) :=
+begin
+    assume pq,
+    cases em p with pfp pfnp,
+        show ¬p ∨ q, from or.intro_right (¬p) (pq pfp),
+        show ¬p ∨ q, from or.intro_left (q) pfnp
+end
 
 example : p ∨ ¬p := 
     begin
@@ -136,14 +156,19 @@ end
 theorem DNEtoEM : (∀ P, ¬¬P → P) → (∀ P, P ∨ ¬P) :=
 begin
     assume notnotPtoP P,
-    have non_contra_em :  P → ¬¬(P ∨ ¬P) :=
-        begin
-            assume p: P,
-            assume np: ¬ (P ∨ ¬ P),
-            have f : P ∨ ¬P := or.intro_left (¬P) p,
-            show false, from np f
-        end,
     have duo_neg_elim_em : ¬¬(P ∨ ¬P) → P ∨ ¬P := notnotPtoP (P ∨ ¬P),
     have notnot_em : ¬¬(P ∨ ¬P) := non_contradictory_em P,
     show P ∨ ¬P, from duo_neg_elim_em notnot_em
 end
+
+#check non_contradictory_em
+
+-- I actually don't know how to prove non_contradictory_em
+-- The following is NOT non_contradictory_em
+example: ∀ P, P → ¬¬(P ∨ ¬P) :=
+    begin
+        assume P p,
+        assume np: ¬ (P ∨ ¬ P),
+        have f : P ∨ ¬P := or.intro_left (¬P) p,
+        show false, from np f
+    end
