@@ -64,12 +64,10 @@ calc
     ... = a + (b + c) * -1 : by rw mul_comm'
     ... = a + (b * -1 + c * -1) : by rw add_mul'
     ... = a + b * -1 + c * -1 : by rw add_assoc'
-    ... = a + -1*b + c * -1 : by rw mul_comm'
-    ... = a + -1*b + -1*c : by rw mul_comm' c
-    ... = a + -b + -1*c : by rw neg_eq_neg_one_mul' b
-    ... = (a + -b) + -c : by rw neg_eq_neg_one_mul' c
+    ... = a + -1*b + -1*c : by rw [mul_comm' b, mul_comm' c]
+    ... = (a + -b) + -c : by rw [neg_eq_neg_one_mul' b, neg_eq_neg_one_mul' c]
     ... = a - b + -c : by rw sub_eq_add_neg'
-    ... = a - b - c : by rw sub_eq_add_neg' (a-b) c
+    ... = a - b - c : by rw sub_eq_add_neg' (a-b)
 
 theorem neg_mul_comm' (a b: ℤ) : -a * b = a * -b :=
 calc
@@ -89,12 +87,10 @@ calc
     a - (b - c) = a + -(b - c) : by rw sub_eq_add_neg'
     ... = a + -1* (b - c) : by rw neg_eq_neg_one_mul'
     ... = a + (b - c) * -1 : by rw mul_comm'
-    ... = a + (b*-1 - c * -1) : by rw sub_mul'
-    ... = a + (-1*b - c*-1) : by rw mul_comm'
-    ... = a + (-1*b - -1*c) : by rw mul_comm' c
+    ... = a + (b*-1 - c*-1) : by rw sub_mul'
+    ... = a + (-1*b - -1*c) : by rw [mul_comm' b, mul_comm' c]
     ... = a + -1*b - -1*c : by rw add_sub_assoc'
-    ... = a + -b - -1*c : by rw neg_eq_neg_one_mul' b
-    ... = a + -b - -c : by rw neg_eq_neg_one_mul' c
+    ... = a + -b - -c : by rw [neg_eq_neg_one_mul' b, neg_eq_neg_one_mul' c]
     ... = a - b - -c : by rw sub_eq_add_neg' a
     ... = a - b + c :  by rw sub_neg_eq_add'
 
@@ -155,9 +151,7 @@ theorem proof (a b c d e f: ℤ) : dot (cross (a, b, c) (d, e, f)) (a, b, c) = 0
 calc
     dot (cross (a, b, c) (d, e, f)) (a, b, c) = dot (b*f - c*e, c*d - a*f, a*e - b*d) (a, b, c) : by rw cross'
     ... = (b*f - c*e)*a + (c*d - a*f)*b + (a*e - b*d)*c : by rw dot'
-    ... = b*f*a - c*e*a + (c*d - a*f)*b + (a*e - b*d)*c : by rw sub_mul'
-    ... = b*f*a - c*e*a + (c*d*b - a*f*b) + (a*e - b*d)*c : by rw sub_mul'
-    ... = b*f*a - c*e*a + (c*d*b - a*f*b) + (a*e*c - b*d*c) : by rw sub_mul'
+    ... = b*f*a - c*e*a + (c*d*b - a*f*b) + (a*e*c - b*d*c) : by rw [sub_mul', sub_mul', sub_mul']
     ... = b*f*a - c*e*a + c*d*b - a*f*b + (a*e*c - b*d*c) : by rw add_sub_assoc'
     ... = b*f*a - a*f*b - c*e*a + c*d*b + (a*e*c - b*d*c) : by rw add_sub_swap1'
     ... = a*f*b - a*f*b - c*e*a + c*d*b + (a*e*c - b*d*c) : by rw mul_swap'
