@@ -192,9 +192,9 @@ example : p ∨ false ↔ p :=
 begin
     apply iff.intro,
         assume pfalse,
-            cases pfalse with pfp pff,
-                show p, from pfp,
-                show p, from false.elim pff,
+        cases pfalse with pfp pff,
+            show p, from pfp,
+            show p, from false.elim pff,
         
         assume pfp,
             show p ∨ false, from or.inl pfp
@@ -210,12 +210,7 @@ begin
         show p ∧ false, from and.intro (false.elim f) f
 end
 
-example : ¬(p ↔ ¬p) :=
-begin
-    apply iff.elim, sorry
-end
-
-example : (p → q) → (¬q → ¬p) := 
+theorem modus_tollens : (p → q) → (¬q → ¬p) := 
     begin
         assume pq,
         assume notq,
@@ -223,6 +218,22 @@ example : (p → q) → (¬q → ¬p) :=
             have pfq : q := pq pfp,
             show false, from notq pfq
     end
+
+example : ¬(p ↔ ¬p) :=
+begin
+    apply iff.elim,
+        assume pnp,
+        assume npp,
+
+        apply modus_tollens,
+            exact npp,
+
+            assume p, 
+            show false, from (pnp p) p,
+
+            assume p,
+            show false, from (pnp p) p
+end
 
 -- these require classical reasoning
 open classical
