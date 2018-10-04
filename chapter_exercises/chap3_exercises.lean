@@ -111,12 +111,42 @@ end
 
 example : ((p ∨ q) → r) ↔ (p → r) ∧ (q → r) :=
 begin
-    sorry
+    apply iff.intro,
+        assume pqr,
+        apply and.intro,
+            assume p,
+            show r, from pqr (or.inl p),
+
+            assume q,
+            show r, from pqr (or.inr q),
+        
+        assume pqr,
+        have pr := pqr.1,
+        have qr := pqr.2,
+        assume pq,
+        cases pq with pfp pfq,
+            show r, from pr pfp,
+            show r, from qr pfq
 end
 
 example : ¬(p ∨ q) ↔ ¬p ∧ ¬q :=
 begin
-    sorry
+    apply iff.intro,
+        assume npq,
+        apply and.intro,
+            assume p,
+            show false, from npq (or.inl p),
+
+            assume q,
+            show false, from npq (or.inr q),
+
+        assume pq,
+        have np := pq.1,
+        have nq := pq.2,
+        assume porq,
+        cases porq with pfp pfq,
+            show false, from np pfp,
+            show false, from nq pfq
 end
 
 example : ¬p ∨ ¬q → ¬(p ∧ q) :=
@@ -182,7 +212,7 @@ end
 
 example : ¬(p ↔ ¬p) :=
 begin
-    assume pnp, sorry
+    apply iff.elim, sorry
 end
 
 example : (p → q) → (¬q → ¬p) := 
@@ -209,7 +239,19 @@ end
 
 example : (p → r ∨ s) → ((p → r) ∨ (p → s)) :=
 begin
-    sorry
+    assume prs,
+    cases em p with pfp pfnp,
+        have rs := prs pfp,
+        cases rs with pfr pfs,
+            apply or.inl,
+                show p → r, from λ k, pfr,
+
+            apply or.inr,
+                show p → s, from λ k, pfs,
+
+        apply or.inl,
+            assume p,
+            show r, from false.elim (pfnp p)
 end
 
 example : ¬(p ∧ q) → ¬p ∨ ¬q := 
@@ -289,12 +331,4 @@ end
 
 #check non_contradictory_em
 
--- I actually don't know how to prove non_contradictory_em
--- The following is NOT non_contradictory_em
-example: ∀ P, P → ¬¬(P ∨ ¬P) :=
-    begin
-        assume P p,
-        assume np: ¬ (P ∨ ¬ P),
-        have f : P ∨ ¬P := or.intro_left (¬P) p,
-        show false, from np f
-    end
+-- I actually don't know how to prove non_contradictory_em. Or, is it even possible?
