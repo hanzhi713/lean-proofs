@@ -1,21 +1,123 @@
 variables p q r s : Prop
 
 -- commutativity of ∧ and ∨
-example : p ∧ q ↔ q ∧ p := sorry
-example : p ∨ q ↔ q ∨ p := sorry
+example : p ∧ q ↔ q ∧ p :=
+begin
+    apply iff.intro,
+        assume pq,
+        show q ∧ p, from and.intro pq.2 pq.1,
+
+        assume qp,
+        show p ∧ q, from and.intro qp.2 qp.1
+end
+example : p ∨ q ↔ q ∨ p :=
+begin
+    apply iff.intro,
+        assume pq,
+        cases pq with pfp pfq,
+            show q ∨ p, from or.inr pfp,
+            show q ∨ p, from or.inl pfq,
+        
+        assume qp,
+        cases qp with pfq pfp,
+            show p ∨ q, from or.inr pfq,
+            show p ∨ q, from or.inl pfp
+end
 
 -- associativity of ∧ and ∨
-example : (p ∧ q) ∧ r ↔ p ∧ (q ∧ r) := sorry
-example : (p ∨ q) ∨ r ↔ p ∨ (q ∨ r) := sorry
+example : (p ∧ q) ∧ r ↔ p ∧ (q ∧ r) :=
+begin
+    apply iff.intro,
+        assume pqr,
+        show p ∧ (q ∧ r), from and.intro pqr.1.1 (and.intro pqr.1.2 pqr.2),
+
+        assume pqr,
+        show (p ∧ q) ∧ r, from and.intro (and.intro pqr.1 pqr.2.1) pqr.2.2
+end
+
+example : (p ∨ q) ∨ r ↔ p ∨ (q ∨ r) :=
+begin
+    apply iff.intro,
+        assume pqr,
+            cases pqr with pq pfr,
+            cases pq with pfp pfq,
+                show p ∨ (q ∨ r), from or.inl pfp,
+                show p ∨ (q ∨ r), from or.inr (or.inl pfq),
+                show p ∨ (q ∨ r), from or.inr (or.inr pfr),
+
+        assume pqr,
+            cases pqr with pfp qr,
+                show (p ∨ q) ∨ r, from or.inl (or.inl pfp),
+            cases qr with pfq pfr,
+                show (p ∨ q) ∨ r, from or.inl (or.inr pfq),
+                show (p ∨ q) ∨ r, from or.inr pfr
+end
 
 -- distributivity
-example : p ∧ (q ∨ r) ↔ (p ∧ q) ∨ (p ∧ r) := sorry
-example : p ∨ (q ∧ r) ↔ (p ∨ q) ∧ (p ∨ r) := sorry
+example : p ∧ (q ∨ r) ↔ (p ∧ q) ∨ (p ∧ r) :=
+begin
+    apply iff.intro,
+    assume pqr,
+        have pfp := pqr.1,
+        have qr := pqr.2,
+        cases qr with pfq pfr,
+            show (p ∧ q) ∨ (p ∧ r), from or.inl (and.intro pfp pfq),
+            show (p ∧ q) ∨ (p ∧ r), from or.inr (and.intro pfp pfr),
+    
+    assume pqpr,
+    cases pqpr with pq pr,
+        have pfp := pq.1,
+        have right := or.inl pq.2,
+        show p ∧ (q ∨ r), from and.intro pfp right,
+
+        have pfp := pr.1,
+        have right := or.inr pr.2,
+        show p ∧ (q ∨ r), from and.intro pfp right
+end
+
+example : p ∨ (q ∧ r) ↔ (p ∨ q) ∧ (p ∨ r) :=
+begin
+    apply iff.intro,
+    assume pqr,
+        cases pqr with pfp qr,
+            show (p ∨ q) ∧ (p ∨ r), from and.intro (or.inl pfp) (or.inl pfp),
+
+            have pfq := qr.1,
+            have pfr := qr.2,
+            show (p ∨ q) ∧ (p ∨ r), from and.intro (or.inr pfq) (or.inr pfr),
+    
+    assume pqpr,
+        have pq := pqpr.1,
+        have pr := pqpr.2,
+        cases pq with pfp pfq,
+            show p ∨ (q ∧ r), from or.inl pfp,
+        cases pr with pfp pfr,
+            show p ∨ (q ∧ r), from or.inl pfp,
+            show p ∨ (q ∧ r), from or.inr (and.intro pfq pfr)
+end
 
 -- other properties
-example : (p → (q → r)) ↔ (p ∧ q → r) := sorry
-example : ((p ∨ q) → r) ↔ (p → r) ∧ (q → r) := sorry
-example : ¬(p ∨ q) ↔ ¬p ∧ ¬q := sorry
+example : (p → (q → r)) ↔ (p ∧ q → r) :=
+begin
+    apply iff.intro,
+        assume pqr,
+        assume pq,
+        show r, from pqr pq.1 pq.2,
+    
+        assume pqr,
+        assume p q,
+        show r, from pqr (and.intro p q),
+end
+
+example : ((p ∨ q) → r) ↔ (p → r) ∧ (q → r) :=
+begin
+    sorry
+end
+
+example : ¬(p ∨ q) ↔ ¬p ∧ ¬q :=
+begin
+    sorry
+end
 
 example : ¬p ∨ ¬q → ¬(p ∧ q) :=
     begin
@@ -36,8 +138,8 @@ example : p ∧ ¬q → ¬(p → q) :=
     begin
         assume pandnotq,
         assume ptoq,
-        have q := ptoq pandnotq.1,
-        show false, from pandnotq.2 q
+            have q := ptoq pandnotq.1,
+            show false, from pandnotq.2 q
     end
 
 example : ¬p → (p → q) := 
@@ -56,16 +158,40 @@ example : (¬p ∨ q) → (p → q) :=
             show q, from pfq
     end
 
-example : p ∨ false ↔ p := sorry
-example : p ∧ false ↔ false := sorry
-example : ¬(p ↔ ¬p) := sorry
+example : p ∨ false ↔ p :=
+begin
+    apply iff.intro,
+        assume pfalse,
+            cases pfalse with pfp pff,
+                show p, from pfp,
+                show p, from false.elim pff,
+        
+        assume pfp,
+            show p ∨ false, from or.inl pfp
+end
+
+example : p ∧ false ↔ false :=
+begin
+    apply iff.intro,
+        assume pf,
+        show false, from pf.2,
+
+        assume f,
+        show p ∧ false, from and.intro (false.elim f) f
+end
+
+example : ¬(p ↔ ¬p) :=
+begin
+    assume pnp, sorry
+end
+
 example : (p → q) → (¬q → ¬p) := 
     begin
         assume pq,
         assume notq,
         assume pfp,
-        have pfq : q := pq pfp,
-        show false, from notq pfq
+            have pfq : q := pq pfp,
+            show false, from notq pfq
     end
 
 -- these require classical reasoning
