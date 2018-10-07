@@ -4,37 +4,37 @@ variables (α : Type) (p q : α → Prop)
 
 example : (∀ x, p x ∧ q x) ↔ (∀ x, p x) ∧ (∀ x, q x) :=
 begin
-  apply iff.intro,
-    assume first,
-    apply and.intro,
-      assume x,
-      show p x, from (first x).1,
+    apply iff.intro,
+        assume first,
+        apply and.intro,
+            assume x,
+            show p x, from (first x).1,
 
-      assume x,
-      show q x, from (first x).2,
-    
-    assume second,
-    assume x,
-    apply and.intro,
-      show p x, from second.1 x,
-      show q x, from second.2 x
+            assume x,
+            show q x, from (first x).2,
+        
+        assume second,
+        assume x,
+        apply and.intro,
+            show p x, from second.1 x,
+            show q x, from second.2 x
 end
 
 example : (∀ x, p x → q x) → (∀ x, p x) → (∀ x, q x) := 
 begin
-    assume first,
-    assume second,
-    assume a,
-    exact first a (second a),
+        assume first,
+        assume second,
+        assume a,
+        exact first a (second a),
 end
 
 example : (∀ x, p x) ∨ (∀ x, q x) → ∀ x, p x ∨ q x :=
 begin
-  assume first,
-  assume x,
-  cases first with px qx,
-    show p x ∨ q x, from or.inl (px x),
-    show p x ∨ q x, from or.inr (qx x)
+    assume first,
+    assume x,
+    cases first with px qx,
+        show p x ∨ q x, from or.inl (px x),
+        show p x ∨ q x, from or.inr (qx x)
 end
 
 -- Exercise 2
@@ -48,10 +48,10 @@ example : (∀ x, r → p x) ↔ (r → ∀ x, p x) := sorry
 -- Exercise 3
 -- Consider the “barber paradox,” that is, the claim that in a certain town there is a (male) barber that shaves all and only the men who do not shave themselves. Prove that this is a contradiction:
 variables (men : Type) (barber : men)
-variable  (shaves : men → men → Prop)
+variable (shaves : men → men → Prop)
 
 example (h : ∀ x : men, shaves barber x ↔ ¬ shaves x x) :
-  false := sorry
+    false := sorry
 
 -- Exercise 5
 open classical
@@ -90,12 +90,11 @@ example (y : real) (h : y > 0)  : exp (log y) = y :=
 exp_log_eq h
 
 theorem log_mul {x y : real} (hx : x > 0) (hy : y > 0) :
-  log (x * y) = log x + log y :=
+    log (x * y) = log x + log y :=
 sorry
 
 -- Exercise 7
 -- Prove the theorem below, using only the ring properties of ℤ enumerated in Section 4.2 and the theorem sub_self.
-
 #check sub_self
 
 example (x : ℤ) : x * 0 = 0 :=

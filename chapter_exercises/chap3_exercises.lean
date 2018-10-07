@@ -275,7 +275,7 @@ begin
         show ¬p ∨ ¬q, from or.inl pfnotP,
 end
 
--- I don't use "example" here because it's used in a following proof
+-- I don't use "example" here because it's used in following proofs
 theorem pf_by_contrapositive: (¬q → ¬p) → (p → q) := 
     begin
         assume nqnp: ¬q → ¬p,
@@ -303,6 +303,24 @@ begin
         have nqnp : ¬q → ¬p := λ nq, pfnp,
         have pq : p → q := pf_by_contrapositive p q nqnp,
         show p ∧ ¬q, from false.elim (notpq pq)
+end
+
+-- an alternative proof to the previous one
+example : ¬(p → q) → p ∧ ¬q :=
+begin
+    assume notpq,
+    apply and.intro,
+        cases em p with pfp pfnp,
+        cases em q with pfq pfnq,
+            show p, from pfp,
+            show p, from pfp,
+
+            have pq := λ p, false.elim (pfnp p),
+            show p, from false.elim (notpq pq),
+
+            assume pfq,
+            have pq : p → q := λ p, pfq,
+            show false, from notpq pq
 end
 
 example : (p → q) → (¬p ∨ q) :=
