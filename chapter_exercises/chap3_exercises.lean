@@ -210,6 +210,16 @@ begin
         show p ∧ false, from and.intro (false.elim f) f
 end
 
+example : ¬(p ↔ ¬p) :=
+begin
+    assume h,
+    have forward := iff.elim_left h,
+    have backward := iff.elim_right h,
+
+    have np : ¬p := λ p, (forward p) p,
+    show false, from np (backward np)
+end
+
 theorem modus_tollens : (p → q) → (¬q → ¬p) := 
     begin
         assume pq,
@@ -219,7 +229,8 @@ theorem modus_tollens : (p → q) → (¬q → ¬p) :=
             show false, from notq pfq
     end
 
-example : ¬(p ↔ ¬p) :=
+-- an alternative proof to ¬(p ↔ ¬p)
+theorem piffnpf : ¬(p ↔ ¬p) :=
 begin
     apply iff.elim,
         assume pnp,
