@@ -4,7 +4,7 @@ Logics and proofs in Lean.
 
 ## About
 
-This repo contains the lean proofs that I explored and completed during the course of CS2102 at UVa.
+This repo contains the lean proofs that I explored and completed in the course of [CS2102](https://github.com/kevinsullivan/cs-dm) at UVa.
 
 [Lessons folder](lessons) contains my class notes, which are basically the random mess that I typed in class.
 
