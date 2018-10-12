@@ -210,16 +210,13 @@ begin
     have pf : log (exp (log (x * y))) = log (exp (log x + log y)) :=
     congr_arg log z,
 
-    have lhs : log (exp (log (x * y))) = log (x * y) := 
-    calc
+    have lhs := calc
         log (exp (log (x * y))) = log (x * y) : by rw log_exp_eq,
 
-    have rhs : log (exp (log x + log y)) = log x + log y :=
-    calc
+    have rhs := calc
         log (exp (log x + log y)) = log x + log y : by rw log_exp_eq,
 
-    show log (x * y) = log x + log y,
-        from calc
+    show log (x * y) = log x + log y, from calc
         log (x * y) = log x + log y : by rw [eq.symm(lhs), pf, rhs],
 end
 
@@ -234,3 +231,7 @@ calc
     x * 0 = x * (x - x) : by rw sub_self
     ... = x * x - x * x : by rw mul_sub
     ... = 0 : by rw sub_self
+
+example (x : ℤ) : x * 0 = 0 :=
+calc
+    x * 0 = 0 : by simp
