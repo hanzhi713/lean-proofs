@@ -1,5 +1,5 @@
 import data.real.basic
--- this is a proof that ∀ vectors a, b ∈ ℝ^3, 
+-- this is a proof that ∀ vectors a, b ∈ ℝ³, 
 -- (a × b) ⬝ a = 0 ∧ (a × b) ⬝ b = 0
 
 def dot: ℝ × ℝ × ℝ → ℝ × ℝ × ℝ → ℝ := λ ⟨a, b, c⟩ ⟨d, e, f⟩, a*d + b*e + c*f

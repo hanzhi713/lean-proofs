@@ -1,4 +1,4 @@
--- this is a proof that ∀ vectors a, b ∈ ℤ^3, 
+-- this is a proof that ∀ vectors a, b ∈ ℤ³, 
 -- (a × b) ⬝ a = 0 ∧ (a × b) ⬝ b = 0
 
 def dot: ℤ × ℤ × ℤ → ℤ × ℤ × ℤ → ℤ := λ ⟨a, b, c⟩ ⟨d, e, f⟩, a*d + b*e + c*f

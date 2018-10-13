@@ -9,7 +9,7 @@
 -- theorem sub_self' (a: ℤ) : a - a = 0 := sub_self a
 -- theorem neg_eq_neg_one_mul' (a:ℤ): -a = -1 * a := neg_eq_neg_one_mul a
 
--- this is a proof that ∀ vectors a, b ∈ ℤ^3, (a × b) ⬝ a = 0
+-- this is a proof that ∀ vectors a, b ∈ ℤ³, (a × b) ⬝ a = 0
 
 axiom add_assoc' : ∀ a b c : ℤ, a + b + c = a + (b + c)
 axiom add_comm' : ∀ a b : ℤ, a + b = b + a
