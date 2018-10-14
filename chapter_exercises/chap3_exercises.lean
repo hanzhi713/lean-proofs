@@ -360,15 +360,24 @@ begin
         show p, from pqp pq
 end
 
--- double negation elimination to axiom of excluded middle
+-- Proof that double negation elimination implies the axiom of excluded middle
+-- First prove that ∀ P, ¬¬(P ∨ ¬P). 
+-- This proof makes use of the property that ¬(p ∨ q) ↔ ¬p ∧ ¬q
+lemma notnotem: ∀ P, ¬¬(P ∨ ¬P) :=
+begin
+    assume P,   
+    assume npornp,
+    have np: ¬P := λ p, npornp (or.inl p),
+    have nnp: ¬¬P := λ np, npornp (or.inr np),
+    show false, from nnp np
+end
+
+#check notnotem
+#check non_contradictory_em -- notnotem is actually a built-in lemma
+
 theorem DNEtoEM : (∀ P, ¬¬P → P) → (∀ P, P ∨ ¬P) :=
 begin
     assume notnotPtoP P,
     have duo_neg_elim_em : ¬¬(P ∨ ¬P) → P ∨ ¬P := notnotPtoP (P ∨ ¬P),
-    have notnot_em : ¬¬(P ∨ ¬P) := non_contradictory_em P,
-    show P ∨ ¬P, from duo_neg_elim_em notnot_em
+    show P ∨ ¬P, from duo_neg_elim_em (notnotem P)
 end
-
-#check non_contradictory_em
-
--- I actually don't know how to prove non_contradictory_em. Or, is it even possible?
