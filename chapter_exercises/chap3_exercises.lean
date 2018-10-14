@@ -141,12 +141,10 @@ begin
             show false, from npq (or.inr q),
 
         assume pq,
-        have np := pq.1,
-        have nq := pq.2,
         assume porq,
         cases porq with pfp pfq,
-            show false, from np pfp,
-            show false, from nq pfq
+            show false, from pq.1 pfp,
+            show false, from pq.2 pfq
 end
 
 example : ¬p ∨ ¬q → ¬(p ∧ q) :=
@@ -360,7 +358,7 @@ begin
         show p, from pqp pq
 end
 
--- Proof that double negation elimination implies the axiom of excluded middle
+-- Proof that double negation elimination implies axiom of excluded middle
 -- First prove that ∀ P, ¬¬(P ∨ ¬P). 
 -- This proof makes use of the property that ¬(p ∨ q) ↔ ¬p ∧ ¬q
 lemma notnotem: ∀ P, ¬¬(P ∨ ¬P) :=
