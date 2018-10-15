@@ -54,6 +54,30 @@ def uncurry (α β γ : Type): (α → β → γ) → α × β → γ := λ f �
 -- Declare some variables and check some expressions involving 
 -- the constants that you have declared.
 
+universe u
+constant vec : Type u → ℕ → Type u
+
+namespace vec
+    constant empty : Π α : Type u, vec α 0
+    constant cons :
+        Π {α : Type u} {n : ℕ}, α → vec α n → vec α (n + 1)
+    constant append :
+        Π (α : Type u) (n m : ℕ),  vec α m → vec α n → vec α (n + m)
+end vec
+
+constant vec_add :
+    Π {m : ℕ},  vec ℕ m → vec ℕ m → vec ℕ m
+
+constant vec_reverse :
+    Π {α : Type u} {m : ℕ}, vec α m → vec α m
+
+variable vecA : vec ℕ 4
+variable vecB : vec ℕ 4
+variable vecC : vec ℕ 5
+#check vec_add vecA vecB
+#check vec_reverse vecA
+#check vec_add (vec.cons 1 vecA) vecC
+
 
 -- Exercise 4
 -- Similarly, declare a constant matrix so that matrix α m n could 
@@ -62,3 +86,26 @@ def uncurry (α β γ : Type): (α → β → γ) → α × β → γ := λ f �
 -- multiplication, and (using vec) multiplication of a matrix by a vector. 
 -- Once again, declare some variables and check some expressions involving 
 -- the constants that you have declared.
+
+constant matrix : Type u → ℕ → ℕ → Type u
+
+namespace matrix
+    constant empty : Π α : Type u, matrix α 0 0
+    constant add : 
+        Π {α : Type u} {m n : ℕ}, 
+            matrix α m n → matrix α m n → matrix α m n
+    constant multiply : 
+        Π {α : Type u} {m n p: ℕ}, 
+            matrix α m n → matrix α n p → matrix α m p
+    constant multiply_by_vec :
+        Π {α : Type u} {m n: ℕ}, 
+            matrix α m n → vec α n → vec α m
+end matrix
+
+variable matA : matrix ℕ 5 4
+variable matB : matrix ℕ 4 3
+variable matC : matrix ℕ 4 3
+
+#check matrix.add matB matC
+#check matrix.multiply matA matB
+#check matrix.multiply_by_vec matA vecA
