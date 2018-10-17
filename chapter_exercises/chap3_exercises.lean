@@ -129,6 +129,7 @@ begin
             show r, from qr pfq
 end
 
+-- First Demorgan's law
 example : ¬(p ∨ q) ↔ ¬p ∧ ¬q :=
 begin
     apply iff.intro,
@@ -140,13 +141,15 @@ begin
             assume q,
             show false, from npq (or.inr q),
 
-        assume pq,
+        assume npnq,
         assume porq,
         cases porq with pfp pfq,
-            show false, from pq.1 pfp,
-            show false, from pq.2 pfq
+            show false, from npnq.1 pfp,
+            show false, from npnq.2 pfq
 end
 
+-- Second Demorgan's law
+-- This direction does not require classical reasoning
 example : ¬p ∨ ¬q → ¬(p ∧ q) :=
     begin
         assume npornq,
@@ -214,7 +217,7 @@ begin
     have forward := iff.elim_left h,
     have backward := iff.elim_right h,
 
-    have np : ¬p := λ p, (forward p) p,
+    have np : ¬p := assume p, (forward p) p,
     show false, from np (backward np)
 end
 
@@ -264,16 +267,18 @@ begin
         have rs := prs pfp,
         cases rs with pfr pfs,
             apply or.inl,
-                show p → r, from λ k, pfr,
+                show p → r, from assume pfp, pfr,
 
             apply or.inr,
-                show p → s, from λ k, pfs,
+                show p → s, from assume pfp, pfs,
 
         apply or.inl,
             assume p,
             show r, from false.elim (pfnp p)
 end
 
+-- Second Demorgan's law, 
+-- the direction that requires classical reasoning
 example : ¬(p ∧ q) → ¬p ∨ ¬q := 
 begin
     assume notPandQ,
@@ -287,8 +292,8 @@ end
 -- I don't use "example" here because it's used in following proofs
 theorem pf_by_contrapositive: (¬q → ¬p) → (p → q) := 
     begin
-        assume nqnp: ¬q → ¬p,
-        assume pfP,
+        assume nqnp : ¬q → ¬p,
+        assume pfP : p,
         have nnq : ¬q → false :=
             begin 
                 assume nq : ¬q,
@@ -304,12 +309,12 @@ begin
     assume notpq,
     cases em p with pfp pfnp,
     cases em q with pfq pfnq,
-        have pq : p → q := λ p, pfq,
+        have pq : p → q := assume p, pfq,
         show p ∧ ¬q, from false.elim (notpq pq),
 
         show p ∧ ¬q, from and.intro pfp pfnq,
         
-        have nqnp : ¬q → ¬p := λ nq, pfnp,
+        have nqnp : ¬q → ¬p := assume nq, pfnp,
         have pq : p → q := pf_by_contrapositive p q nqnp,
         show p ∧ ¬q, from false.elim (notpq pq)
 end
@@ -324,11 +329,28 @@ begin
             show p, from pfp,
             show p, from pfp,
 
-            have pq := λ p, false.elim (pfnp p),
+            have pq : p → q := assume p, false.elim (pfnp p),
             show p, from false.elim (notpq pq),
 
             assume pfq,
-            have pq : p → q := λ p, pfq,
+            have pq : p → q := assume p, pfq,
+            show false, from notpq pq
+end
+
+-- an alternative proof to the previous one
+example : ¬(p → q) → p ∧ ¬q :=
+begin
+    assume notpq,
+    apply and.intro,
+        cases em p with pfp pfnp,
+            show p, from pfp,
+
+            have nqnp : ¬q → ¬p := assume nq, pfnp,
+            have pq : p → q := pf_by_contrapositive p q nqnp,
+            show p, from false.elim (notpq pq),
+
+            assume pfq,
+            have pq : p → q := assume p, pfq,
             show false, from notpq pq
 end
 
@@ -336,8 +358,8 @@ example : (p → q) → (¬p ∨ q) :=
 begin
     assume pq,
     cases em p with pfp pfnp,
-        show ¬p ∨ q, from or.intro_right (¬p) (pq pfp),
-        show ¬p ∨ q, from or.intro_left (q) pfnp
+        show ¬p ∨ q, from or.inr (pq pfp),
+        show ¬p ∨ q, from or.inl pfnp
 end
 
 example : p ∨ ¬p := 
@@ -349,11 +371,9 @@ example : (((p → q) → p) → p) :=
 begin
     assume pqp,
     cases em p with pfp pfnp,
-    cases em q with pfq pfnq,
         show p, from pfp,
-        show p, from pfp,
-        have n: ¬q → ¬p :=
-            λ nq, pfnp,
+
+        have n: ¬q → ¬p := assume nq, pfnp,
         have pq : p → q := pf_by_contrapositive p q n,
         show p, from pqp pq
 end
@@ -365,8 +385,8 @@ lemma notnotem: ∀ P, ¬¬(P ∨ ¬P) :=
 begin
     assume P,   
     assume npornp,
-    have np: ¬P := λ p, npornp (or.inl p),
-    have nnp: ¬¬P := λ np, npornp (or.inr np),
+    have np: ¬P := assume p, npornp (or.inl p),
+    have nnp: ¬¬P := assume np, npornp (or.inr np),
     show false, from nnp np
 end
 
