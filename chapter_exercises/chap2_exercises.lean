@@ -8,10 +8,10 @@ def times2plus1 : ℕ → ℕ := λ x, x * 2 + 1
 
 def do_twice_ (f : ℕ → ℕ) (x : ℕ) : ℕ := f (f x)
 def do_twice : (ℕ → ℕ) → ℕ → ℕ := λ f x, f (f x)
-def do_third_times : (ℕ → ℕ) → ℕ → ℕ := λ f x, f (f (f x))
+def do_three_times : (ℕ → ℕ) → ℕ → ℕ := λ f x, f (f (f x))
 
 #check do_twice
-#reduce do_third_times square 2 -- 256
+#reduce do_three_times square 2 -- 256
 #reduce do_twice square 2 -- 16
 
 def quadruple : ℕ → ℕ := λ x, do_twice double x
@@ -19,20 +19,39 @@ def quadruple : ℕ → ℕ := λ x, do_twice double x
 #reduce quadruple 2 -- 8
 
 -- Do_Twice
-/- Equivalent forms -/
+-- if (f: (ℕ → ℕ) → (ℕ → ℕ)) is a function that applies 
+-- (g : ℕ → ℕ) on its argument x A times, 
+-- then (Do_Twice f g) applies g on its argument A² times. 
 def Do_Twice (f : (ℕ → ℕ) → (ℕ → ℕ)) (x : ℕ → ℕ) : ℕ → ℕ := f (f x)
-def Do_Twice' : ((ℕ → ℕ) → (ℕ → ℕ)) → (ℕ → ℕ) → (ℕ → ℕ) := λ f g, f (f g)
+def Do_Twice_ : ((ℕ → ℕ) → (ℕ → ℕ)) → (ℕ → ℕ) → (ℕ → ℕ) := 
+    λ f x, f (f x)
+
+-- Another version of Do_Twice
+-- if (f: (ℕ → ℕ) → (ℕ → ℕ))
+-- is a function that applies (g : ℕ → ℕ) on its argument A times, 
+-- then (Do_Twice f g) applies g on its argument 2A times. 
+def Do_Twice' : ((ℕ → ℕ) → (ℕ → ℕ)) → (ℕ → ℕ) → (ℕ → ℕ) := 
+    λ f g x, f g (f g x)
+def Do_Twice'_ (f: (ℕ → ℕ) → (ℕ → ℕ)) (g: ℕ → ℕ) (x : ℕ) : ℕ := 
+    f g (f g x)
+
+-- count the number of ℕ → ℕ being applied, you'll find that there're 3^2=9 of them.
+#reduce Do_Twice do_three_times
+
+-- count the number of ℕ → ℕ being applied, you'll find that there're 3*2=6 of them.
+#reduce Do_Twice' do_three_times
+
 
 #reduce Do_Twice do_twice double 2 -- 32
-#reduce Do_Twice do_twice times2plus1 2 -- 47
-#reduce Do_Twice do_third_times times2plus1 2 -- 1535
+#eval Do_Twice do_twice times2plus1 2 -- 47
+#eval Do_Twice do_three_times times2plus1 2 -- 1535
+#eval (((((((((2*2)+1)*2+1)*2+1)*2+1)*2+1)*2+1)*2+1)*2+1)*2+1 -- 1535 : (x*2+1) being applied (3^3=9) times
 #eval Do_Twice do_twice square 2 -- 65536
 
-#reduce do_third_times square 2 -- 256
-#eval Do_Twice do_third_times square 2 -- 18446744073709551616
+#reduce do_three_times square 2 -- 256
+#eval Do_Twice' do_three_times square 2 -- 18446744073709551616
 #eval (((((2^2)^2)^2)^2)^2)^2 -- 18446744073709551616 
 #eval Do_Twice do_twice square 2 -- 65536
-
 
 -- Exercise 2
 -- Define the functions curry and uncurry, as described in Section 2.4.
