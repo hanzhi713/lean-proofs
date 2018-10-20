@@ -144,19 +144,22 @@ end hidden
 -- Look up the definition of a Fermat prime or any of the other statements, 
 -- if necessary.
 
-def prime (n : ℕ) : Prop := sorry
+def prime (n : ℕ) : Prop := n ≥ 2 ∧ ∀ x ∣ n, x = 1 ∨ x = n
 
-def infinitely_many_primes : Prop := sorry
+def infinitely_many_primes : Prop := ∀ n, prime n → ∃ x, x > n
 
-def Fermat_prime (n : ℕ) : Prop := sorry
+def Fermat_prime (n : ℕ) : Prop := ∀ n ≥ 0, prime (2 ^ 2 ^ n + 1) 
 
-def infinitely_many_Fermat_primes : Prop := sorry
+def infinitely_many_Fermat_primes : Prop := ∀ n, Fermat_prime n → ∃ x, x > n
 
-def goldbach_conjecture : Prop := sorry
+def goldbach_conjecture : Prop := 
+   ∀ n ≥ 2, even n → ∃ x y, prime x ∧ prime y ∧ n = x + y
 
-def Goldbach's_weak_conjecture : Prop := sorry
+def Goldbach's_weak_conjecture : Prop :=
+    ∀ n, ¬ (even n) → ∃ x y z, prime x ∧ prime y ∧ prime z ∧ n = x + y + z
 
-def Fermat's_last_theorem : Prop := sorry
+def Fermat's_last_theorem : Prop := 
+    ∀ n ≥ 3, ¬ (∃ x y z, x ≥ 1 ∧ y ≥ 1 ∧ z ≥ 1 ∧ x^n + y^n = z^n)
 
 
 -- Exercise 5
