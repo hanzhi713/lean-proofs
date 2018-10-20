@@ -133,7 +133,6 @@ section
   #check even (m^n +3)
 end
 
-end hidden
 -- Remember that, without any parameters, an expression of 
 -- type Prop is just an assertion. Fill in the definitions of prime 
 -- and Fermat_prime below, and construct the given assertion. 
@@ -160,6 +159,8 @@ def Goldbach's_weak_conjecture : Prop :=
 
 def Fermat's_last_theorem : Prop := 
     ∀ n ≥ 3, ¬ (∃ x y z, x ≥ 1 ∧ y ≥ 1 ∧ z ≥ 1 ∧ x^n + y^n = z^n)
+
+end hidden
 
 
 -- Exercise 5
