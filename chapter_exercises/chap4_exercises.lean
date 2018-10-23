@@ -164,24 +164,157 @@ end hidden
 
 
 -- Exercise 5
-section
-    open classical
-    variable a : α
 
-    example : (∃ x : α, r) → r := sorry
-    example : r → (∃ x : α, r) := sorry
-    example : (∃ x, p x ∧ r) ↔ (∃ x, p x) ∧ r := sorry
-    example : (∃ x, p x ∨ q x) ↔ (∃ x, p x) ∨ (∃ x, q x) := sorry
+open classical
+variable a : α -- required in the second one and the last two
 
-    example : (∀ x, p x) ↔ ¬ (∃ x, ¬ p x) := sorry
-    example : (∃ x, p x) ↔ ¬ (∀ x, ¬ p x) := sorry
-    example : (¬ ∃ x, p x) ↔ (∀ x, ¬ p x) := sorry
-    example : (¬ ∀ x, p x) ↔ (∃ x, ¬ p x) := sorry
 
-    example : (∀ x, p x → r) ↔ (∃ x, p x) → r := sorry
-    example : (∃ x, p x → r) ↔ (∀ x, p x) → r := sorry
-    example : (∃ x, r → p x) ↔ (r → ∃ x, p x) := sorry
+example : (∃ x : α, r) → r := 
+begin
+    assume : ∃ (x : α), r,
+    apply exists.elim this,
+    intros, assumption
 end
+
+section
+    include a
+    example : r → (∃ x : α, r) := 
+    begin
+        assume pfr,
+        apply exists.intro a,
+        assumption
+    end
+end
+
+example : (∃ x, p x ∧ r) ↔ (∃ x, p x) ∧ r := 
+begin
+    apply iff.intro,
+        assume h,
+        apply and.intro,
+            apply exists.elim h,
+                intros,
+                exact ⟨a, a_1.1⟩,
+            apply exists.elim h,
+                intros,
+                exact a_1.2,
+        
+        assume h,
+        apply exists.elim h.1,
+            intros,
+            apply exists.intro a,
+                apply and.intro,
+                    assumption,
+                    show r, from h.2
+end
+
+example : (∃ x, p x ∨ q x) ↔ (∃ x, p x) ∨ (∃ x, q x) :=
+begin
+    apply iff.intro,
+        assume h,
+        apply exists.elim h,
+            intros,
+            cases a_1,
+                apply or.inl,
+                    exact ⟨a, a_1⟩,
+                apply or.inr,
+                    exact ⟨a, a_1⟩,
+        
+        assume h,
+        cases h with epx eqx,
+            apply exists.elim epx,
+                intros,
+                apply exists.intro a,
+                    exact or.inl a_1,
+            
+            apply exists.elim eqx,
+                intros,
+                apply exists.intro a,
+                    exact or.inr a_1,
+end
+
+example : (∀ x, p x) ↔ ¬ (∃ x, ¬ p x) :=
+begin
+    apply iff.intro,
+        assume h,
+        assume e,
+        show false,
+            apply exists.elim e,
+                intros,
+                have : p a := h a,
+                show false, from a_1 this,
+
+        intros h x,
+        cases em (p x),
+            assumption,
+
+            have : ∃ (x : α), ¬ p x := ⟨x, h_1⟩,
+            show p x, from absurd this h
+end
+
+example : (∃ x, p x) ↔ ¬ (∀ x, ¬ p x) :=
+begin
+    apply iff.intro,
+        assume h,
+        assume f,
+        apply exists.elim h,
+            intros,
+            have : ¬ p a, from f a,
+            show false, from this a_1,
+        
+        assume h,
+            apply by_contradiction, -- requires classical reasoning
+                assume notE,
+                have : ∀ (x : α), ¬ p x,
+                    assume x,
+                    assume px,
+                    have : ∃ (x : α), p x,
+                        from ⟨x, px⟩,
+                    show false, from notE this,
+                
+                show false, from h this
+end
+
+example : (¬ ∃ x, p x) ↔ (∀ x, ¬ p x) :=
+begin
+    apply iff.intro,
+        assume h,
+        assume a,
+        assume pa,
+        show false, from h ⟨a, pa⟩,
+
+        assume h,
+        assume e,
+        apply exists.elim e,
+            intros,
+            have : ¬ p a, from h a,
+            show false, from this a_1
+end
+
+example : (¬ ∀ x, p x) ↔ (∃ x, ¬ p x) :=
+begin
+    apply iff.intro,
+        assume h,
+        apply by_contradiction,
+            intros,
+            have : ∀ (x : α), p x,
+                assume x,
+                apply by_contradiction,
+                    assume npx,
+                    have : ∃ (x : α), ¬p x, from ⟨x, npx⟩,
+                    show false, from a this,
+            show false, from h this,
+                
+        assume h,
+        assume f,
+        apply exists.elim h,
+            intros,
+            have : p a, from f a,
+            show false, from a_1 this
+end
+
+example : (∀ x, p x → r) ↔ (∃ x, p x) → r := sorry
+example : (∃ x, p x → r) ↔ (∀ x, p x) → r := sorry
+example : (∃ x, r → p x) ↔ (r → ∃ x, p x) := sorry
 
 
 -- Exercise 6
