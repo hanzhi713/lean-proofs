@@ -378,6 +378,18 @@ begin
         show p, from pqp pq
 end
 
+-- an alternative proof to the previous one
+example : (((p → q) → p) → p) := 
+begin
+    assume pqp,
+    cases em p with pfp pfnp,
+        show p, from pfp,
+
+        have pq: p → q :=
+            assume pfp, false.elim (pfnp pfp),
+        show p, from pqp pq
+end
+
 -- Proof that double negation elimination implies axiom of excluded middle
 -- First prove that ∀ P, ¬¬(P ∨ ¬P). 
 -- This proof makes use of the property that ¬(p ∨ q) ↔ ¬p ∧ ¬q
