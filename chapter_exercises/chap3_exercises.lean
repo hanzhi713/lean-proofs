@@ -307,6 +307,23 @@ theorem pf_by_contrapositive: (¬q → ¬p) → (p → q) :=
 example : ¬(p → q) → p ∧ ¬q :=
 begin
     assume notpq,
+    apply and.intro,
+        show ¬q, --note: "show" can be used to switch the order of goals
+            assume pfq,
+            have pq : p → q := assume pfp, pfq,
+            show false, from notpq pq,
+
+        cases em p with pfp pfnp,
+            assumption,
+            have pq : p → q := 
+                assume pfp, false.elim (pfnp pfp),
+            show p, from false.elim (notpq pq)
+end
+
+-- an alternative proof to the previous one
+example : ¬(p → q) → p ∧ ¬q :=
+begin
+    assume notpq,
     cases em p with pfp pfnp,
     cases em q with pfq pfnq,
         have pq : p → q := assume p, pfq,
