@@ -312,9 +312,95 @@ begin
             show false, from a_1 this
 end
 
-example : (∀ x, p x → r) ↔ (∃ x, p x) → r := sorry
-example : (∃ x, p x → r) ↔ (∀ x, p x) → r := sorry
-example : (∃ x, r → p x) ↔ (r → ∃ x, p x) := sorry
+example : (∀ x, p x → r) ↔ (∃ x, p x) → r :=
+begin
+    apply iff.intro,
+        assume h,
+        assume e,
+        apply exists.elim e,
+            intros,
+            have : p a → r, from h a,
+            show r, from this a_1,
+        
+        assume e : (∃ (x : α), p x) → r,
+        assume a,
+        assume pa,
+        have : (∃ (x : α), p x), from ⟨a, pa⟩,
+        show r, from e this
+end
+
+theorem nfe : (¬ ∀ x, p x) → (∃ x, ¬ p x) :=
+begin
+    assume h,
+    apply by_contradiction,
+        intros,
+        have : ∀ (x : α), p x,
+            assume x,
+            apply by_contradiction,
+                assume npx,
+                have : ∃ (x : α), ¬p x, from ⟨x, npx⟩,
+                show false, from a this,
+        show false, from h this,
+end
+
+theorem t : ∀ {p q : Prop}, (p → q) → (¬p ∨ q) :=
+begin
+    assume p q,
+    assume pq,
+    cases em p with pfp pfnp,
+        show ¬p ∨ q, from or.inr (pq pfp),
+        show ¬p ∨ q, from or.inl pfnp
+end
+
+include a
+example : (∃ x, p x → r) ↔ (∀ x, p x) → r :=
+begin
+    apply iff.intro,
+        assume e f,
+        apply exists.elim e,
+            assume x, 
+            assume pxr,
+            have : p x, from f x,
+            show r, from pxr this,
+        
+        assume h,
+            have : ¬(∀ (x : α), p x) ∨ r, from t h,
+            apply exists.intro a,
+                assume pa,
+                cases this,
+                    have e : ∃ (x : α), ¬p x, 
+                        apply nfe, assumption,
+                    have ne : ∃ (x : α), p x,
+                        from ⟨a, pa⟩,
+                    -- these two are not contradictory. 
+                    -- don't know how to prove.
+                    sorry,
+                    assumption
+end
+
+example : (∃ x, r → p x) ↔ (r → ∃ x, p x) :=
+begin
+    apply iff.intro,
+        assume e,
+        assume r,
+        apply exists.elim e,
+            assume x,
+            assume rpx,
+            have : p x, from rpx r,
+            exact ⟨x, this⟩,
+        
+        assume re,
+        cases em r with pfr pfnr,
+            have : (∃ (x : α), p x), from re pfr,
+            apply exists.elim this,
+                assume x px,
+                show ∃ (x : α), r → p x,
+                    from ⟨x, assume r, px⟩,
+            
+            apply exists.intro a,
+                assume pfr,
+                show p a, from absurd pfr pfnr
+end
 
 
 -- Exercise 6
