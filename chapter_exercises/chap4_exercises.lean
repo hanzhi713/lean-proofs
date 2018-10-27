@@ -152,16 +152,15 @@ def Fermat_prime (n : ℕ) : Prop := ∀ n ≥ 0, prime (2 ^ 2 ^ n + 1)
 def infinitely_many_Fermat_primes : Prop := ∀ n, Fermat_prime n → ∃ x, x > n
 
 def goldbach_conjecture : Prop := 
-   ∀ n ≥ 2, even n → ∃ x y, prime x ∧ prime y ∧ n = x + y
+   ∀ n ≥ 2, even n → (∃ x y, prime x → prime y → n = x + y)
 
 def Goldbach's_weak_conjecture : Prop :=
-    ∀ n, ¬ (even n) → ∃ x y z, prime x ∧ prime y ∧ prime z ∧ n = x + y + z
+    ∀ n, ¬ (even n) → (∃ x y z, prime x → prime y → prime z → n = x + y + z)
 
 def Fermat's_last_theorem : Prop := 
-    ∀ n ≥ 3, ¬ (∃ x y z, x ≥ 1 ∧ y ≥ 1 ∧ z ≥ 1 ∧ x^n + y^n = z^n)
+    ∀ n ≥ 3, ¬ (∃ x y z, x ≥ 1 → y ≥ 1 → z ≥ 1 → x^n + y^n = z^n)
 
 end hidden
-
 
 -- Exercise 5
 
@@ -251,7 +250,7 @@ begin
             show p x, from absurd this h
 end
 
-example : (∃ x, p x) ↔ ¬ (∀ x, ¬ p x) :=
+theorem e_na_nt : (∃ x, p x) ↔ ¬ (∀ x, ¬ p x) :=
 begin
     apply iff.intro,
         assume h,
@@ -329,27 +328,23 @@ begin
         show r, from e this
 end
 
-theorem nfe : (¬ ∀ x, p x) → (∃ x, ¬ p x) :=
-begin
-    assume h,
-    apply by_contradiction,
-        intros,
-        have : ∀ (x : α), p x,
-            assume x,
-            apply by_contradiction,
-                assume npx,
-                have : ∃ (x : α), ¬p x, from ⟨x, npx⟩,
-                show false, from a this,
-        show false, from h this,
-end
-
-theorem t : ∀ {p q : Prop}, (p → q) → (¬p ∨ q) :=
+-- copied from one of the chapter 3 exercises,
+-- used in the proof of ((∀ x, p x) → r) → (∃ x, p x → r) 
+theorem npq_pandnq : ∀ {p q : Prop}, ¬(p → q) → p ∧ ¬q :=
 begin
     assume p q,
-    assume pq,
-    cases em p with pfp pfnp,
-        show ¬p ∨ q, from or.inr (pq pfp),
-        show ¬p ∨ q, from or.inl pfnp
+    assume notpq,
+    apply and.intro,
+        show ¬q,
+            assume pfq,
+            have pq : p → q := assume pfp, pfq,
+            show false, from notpq pq,
+
+        cases em p with pfp pfnp,
+            assumption,
+            have pq : p → q := 
+                assume pfp, false.elim (pfnp pfp),
+            show p, from false.elim (notpq pq)
 end
 
 include a
@@ -362,20 +357,21 @@ begin
             assume pxr,
             have : p x, from f x,
             show r, from pxr this,
-        
-        assume h,
-            have : ¬(∀ (x : α), p x) ∨ r, from t h,
-            apply exists.intro a,
-                assume pa,
-                cases this,
-                    have e : ∃ (x : α), ¬p x, 
-                        apply nfe, assumption,
-                    have ne : ∃ (x : α), p x,
-                        from ⟨a, pa⟩,
-                    -- these two are not contradictory. 
-                    -- don't know how to prove.
-                    sorry,
-                    assumption
+
+        -- this one is really hard
+        assume h : (∀ (x : α), p x) → r,
+            apply (e_na_nt α (λ x : α, p x → r)).mpr,
+                assume k : ∀ (x : α), ¬(p x → r),
+                have xpx: (∀ (x : α), p x),
+                    assume x,
+                    have : ¬(p x → r), from k x,
+                    have : p x ∧ ¬r, from npq_pandnq this,
+                    show p x, from this.1,
+                have npar: ¬(p a → r), from k a,
+                have pfr : r, from h xpx,
+                have : p a → r, 
+                    assume _, assumption,
+                show false, from npar this
 end
 
 example : (∃ x, r → p x) ↔ (r → ∃ x, p x) :=
