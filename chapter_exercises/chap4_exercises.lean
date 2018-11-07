@@ -67,7 +67,7 @@ section
                     have pa : p a ∨ r := forward a, 
                     cases pa with pfpa pfr,
                         show p a, from pfpa,
-                        show p a, from false.elim (pfnr pfr),
+                        contradiction,
 
             assume backward,
             assume a,
@@ -191,15 +191,18 @@ begin
         assume h,
         apply and.intro,
             apply exists.elim h,
-                intros,
-                exact ⟨a, a_1.1⟩,
+                assume a : α,
+                assume par : p a ∧ r,
+                exact ⟨a, par.1⟩,
             apply exists.elim h,
-                intros,
-                exact a_1.2,
+                assume a : α,
+                assume par : p a ∧ r,
+                show r, from par.2,
         
         assume h,
         apply exists.elim h.1,
-            intros,
+            assume a : α,
+            assume pa : p a,
             apply exists.intro a,
                 apply and.intro,
                     assumption,
@@ -209,45 +212,47 @@ end
 example : (∃ x, p x ∨ q x) ↔ (∃ x, p x) ∨ (∃ x, q x) :=
 begin
     apply iff.intro,
-        assume h,
+        assume h : ∃ (x : α), p x ∨ q x,
         apply exists.elim h,
-            intros,
-            cases a_1,
+            assume a,
+            assume : p a ∨ q a,
+            cases this with pfpa pfqa,
                 apply or.inl,
-                    exact ⟨a, a_1⟩,
+                    exact ⟨a, pfpa⟩,
                 apply or.inr,
-                    exact ⟨a, a_1⟩,
+                    exact ⟨a, pfqa⟩,
         
-        assume h,
+        assume h : (∃ (x : α), p x) ∨ ∃ (x : α), q x,
         cases h with epx eqx,
             apply exists.elim epx,
-                intros,
+                assume a pa,
                 apply exists.intro a,
-                    exact or.inl a_1,
+                    show p a ∨ q a, from or.inl pa,
             
             apply exists.elim eqx,
-                intros,
+                assume a qa,
                 apply exists.intro a,
-                    exact or.inr a_1,
+                   show p a ∨ q a, from or.inr qa,
 end
 
 example : (∀ x, p x) ↔ ¬ (∃ x, ¬ p x) :=
 begin
     apply iff.intro,
-        assume h,
-        assume e,
+        assume h : ∀ (x : α), p x,
+        assume e : ∃ (x : α), ¬p x,
         show false,
             apply exists.elim e,
-                intros,
+                assume a,
+                assume npa : ¬ p a,
                 have : p a := h a,
-                show false, from a_1 this,
+                show false, from npa this,
 
-        intros h x,
-        cases em (p x),
-            assumption,
-
-            have : ∃ (x : α), ¬ p x := ⟨x, h_1⟩,
-            show p x, from absurd this h
+        assume ne : ¬∃ (x : α), ¬p x,
+        assume a,
+        apply by_contradiction,
+            assume npa : ¬ p a,
+            have : ∃ (x : α), ¬ p x := ⟨a, npa⟩,
+            contradiction,
 end
 
 theorem e_na_nt : (∃ x, p x) ↔ ¬ (∀ x, ¬ p x) :=
@@ -256,21 +261,21 @@ begin
         assume h,
         assume f,
         apply exists.elim h,
-            intros,
+            assume a,
+            assume pa : p a,
             have : ¬ p a, from f a,
-            show false, from this a_1,
+            contradiction,
         
-        assume h,
-            apply by_contradiction, -- requires classical reasoning
-                assume notE,
+        assume h : ¬∀ (x : α), ¬p x,
+            apply by_contradiction,
+                assume notE : ¬∃ (x : α), p x,
                 have : ∀ (x : α), ¬ p x,
                     assume x,
                     assume px,
                     have : ∃ (x : α), p x,
                         from ⟨x, px⟩,
-                    show false, from notE this,
-                
-                show false, from h this
+                    contradiction,
+                contradiction
 end
 
 example : (¬ ∃ x, p x) ↔ (∀ x, ¬ p x) :=
@@ -284,31 +289,33 @@ begin
         assume h,
         assume e,
         apply exists.elim e,
-            intros,
+            assume a,
+            assume pa : p a,
             have : ¬ p a, from h a,
-            show false, from this a_1
+            contradiction,
 end
 
 example : (¬ ∀ x, p x) ↔ (∃ x, ¬ p x) :=
 begin
     apply iff.intro,
-        assume h,
+        assume h : ¬∀ (x : α), p x,
         apply by_contradiction,
-            intros,
+            assume ne : ¬∃ (x : α), ¬p x,
             have : ∀ (x : α), p x,
                 assume x,
                 apply by_contradiction,
                     assume npx,
                     have : ∃ (x : α), ¬p x, from ⟨x, npx⟩,
-                    show false, from a this,
-            show false, from h this,
+                    contradiction,
+            contradiction,
                 
-        assume h,
-        assume f,
+        assume h : (∃ (x : α), ¬p x),
+        assume f : ∀ (x : α), p x,
         apply exists.elim h,
-            intros,
+            assume a,
+            assume npa : ¬ p a,
             have : p a, from f a,
-            show false, from a_1 this
+            contradiction,
 end
 
 example : (∀ x, p x → r) ↔ (∃ x, p x) → r :=
@@ -317,9 +324,10 @@ begin
         assume h,
         assume e,
         apply exists.elim e,
-            intros,
+            assume a,
+            assume pa : p a,
             have : p a → r, from h a,
-            show r, from this a_1,
+            show r, from this pa,
         
         assume e : (∃ (x : α), p x) → r,
         assume a,
@@ -378,14 +386,14 @@ example : (∃ x, r → p x) ↔ (r → ∃ x, p x) :=
 begin
     apply iff.intro,
         assume e,
-        assume r,
+        assume pfr,
         apply exists.elim e,
             assume x,
-            assume rpx,
-            have : p x, from rpx r,
-            exact ⟨x, this⟩,
+            assume rpx : r → p x,
+            have : p x, from rpx pfr,
+            show ∃ (x : α), p x, from ⟨x, this⟩,
         
-        assume re,
+        assume re : r → (∃ (x : α), p x),
         cases em r with pfr pfnr,
             have : (∃ (x : α), p x), from re pfr,
             apply exists.elim this,
@@ -395,7 +403,7 @@ begin
             
             apply exists.intro a,
                 assume pfr,
-                show p a, from absurd pfr pfnr
+                contradiction,
 end
 
 
