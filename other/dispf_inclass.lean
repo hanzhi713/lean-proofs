@@ -1,4 +1,4 @@
-theorem all_nne :∀ (α : Type) (p : α → Prop), 
+theorem all_nne : ∀ (α : Type 1) (p : α → Prop), 
     (∀ x, p x) → ¬ (∃ x, ¬ p x) :=
 begin
     assume α p,
@@ -15,14 +15,13 @@ example : ¬ (∀ (X : Type), ∀ (p q : X → Prop),
     (∃ x, p x) ∧ (∃ x, q x) → ∃ x, p x ∧ q x) :=
 begin
     assume h,
-    have ne : ¬ ∃ X : ℕ, ¬ (∀ (p q : ℕ → Prop),
+    have ne : ¬ ∃ X : Type, ¬ (∀ (p q : X → Prop),
     (∃ x, p x) ∧ (∃ x, q x) → ∃ x, p x ∧ q x),
-        apply all_nne,
-        assume _, exact h ℕ,
+        apply all_nne, assumption,
     
-    have : ∃ X : ℕ, ¬ (∀ (p q : ℕ → Prop),
+    have : ∃ X : Type, ¬ (∀ (p q : X → Prop),
     (∃ x, p x) ∧ (∃ x, q x) → ∃ x, p x ∧ q x),
-        apply exists.intro 1,
+        apply exists.intro ℕ,
         assume h2,
         have h3 : (∃ x, x = 0) ∧ (∃ x, x = 1) → 
                     (∃ x, x = 0 ∧ x = 1),
