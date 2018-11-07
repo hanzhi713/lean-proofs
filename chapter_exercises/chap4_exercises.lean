@@ -336,23 +336,23 @@ begin
         show r, from e this
 end
 
--- copied from one of the chapter 3 exercises,
+-- This is one of the chapter 3 exercises,
 -- used in the proof of ((∀ x, p x) → r) → (∃ x, p x → r) 
 theorem npq_pandnq : ∀ {p q : Prop}, ¬(p → q) → p ∧ ¬q :=
 begin
     assume p q,
-    assume notpq,
+    assume notpq : ¬(p → q),
     apply and.intro,
-        show ¬q,
-            assume pfq,
-            have pq : p → q := assume pfp, pfq,
-            show false, from notpq pq,
-
-        cases em p with pfp pfnp,
-            assumption,
-            have pq : p → q := 
-                assume pfp, false.elim (pfnp pfp),
-            show p, from false.elim (notpq pq)
+        apply by_contradiction,
+        assume np : ¬ p,
+            have pq : p → q,
+                assume pfp,
+                contradiction,
+            contradiction,
+        
+        assume pfq,
+        have pq : p → q := assume pfp, pfq,
+        contradiction,
 end
 
 include a
