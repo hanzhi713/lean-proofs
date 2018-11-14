@@ -1,4 +1,5 @@
 tests/
 hw/
 exams/
-mathlib/
+_target/deps/
+*.olean
