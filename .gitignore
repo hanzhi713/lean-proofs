@@ -1,5 +1,5 @@
 tests/
 hw/
 exams/
-_target/deps/
+_target/
 *.olean
