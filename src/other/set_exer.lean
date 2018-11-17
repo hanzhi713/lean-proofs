@@ -9,8 +9,7 @@ section
   begin
     assume x,
     assume h,
-    left,
-    exact h.1,
+    left, exact h.1,
   end
 
   example : ∀ x, x ∈ -(A ∪ B) → x ∈ -A :=
@@ -90,6 +89,7 @@ section
     begin
         assume x,
         assume h,
+        -- actually, simp * at * here will do the job
         apply Inter.intro,
             assume i,
             split,
@@ -126,10 +126,10 @@ section
     example (h : A ⊆ B) : powerset A ⊆ powerset B :=
     begin
         assume s : set U,
-        assume h2 : s ∈ 𝒫 A, -- s is a subset of A, i.e. s ⊆ A, which is x ∈ s → x ∈ A
+        assume h₂ : s ∈ 𝒫 A, -- s is a subset of A, i.e. s ⊆ A, which is x ∈ s → x ∈ A
         assume x : U,
         assume xinS : x ∈ s,
-        exact h (h2 xinS),
+        exact h (h₂ xinS),
     end
 
     example (h : powerset A ⊆ powerset B) : A ⊆ B :=
