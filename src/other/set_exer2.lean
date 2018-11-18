@@ -1,4 +1,5 @@
 import data.set
+import data.list
 open set
 open classical
 
@@ -121,8 +122,8 @@ begin
                 exact h.2 xinC,
 end
 
--- 5. Part II (I used A and B instead of C and D)
-example : A \ B = A ∩ -B :=
+-- 5. Part II
+example : C \ D = C ∩ -D :=
 begin
     apply ext,
     assume x,
@@ -209,6 +210,86 @@ begin
         }    
 end
 
+-- 8 & 9. Note: theorems are from set_exer.lean
+section
+    variables {I J : Type}
+
+    theorem Inter.intro {I : Type} {A : I → set U} 
+    {x : U} (h : ∀ i, x ∈ A i) : x ∈ ⋂ i, A i :=
+    by simp; assumption
+
+    @[elab_simple]
+    theorem Inter.elim {I : Type} {A : I → set U} 
+    {x : U} (h : x ∈ ⋂ i, A i) (i : I) : x ∈ A i :=
+    by simp at h; apply h
+
+    theorem Union.intro {I : Type} {A : I → set U} 
+    {x : U} (i : I) (h : x ∈ A i) : x ∈ ⋃ i, A i :=
+    by {simp, existsi i, exact h}
+
+    theorem Union.elim {I : Type} {A : I → set U} {b : Prop} {x : U}
+    (h₁ : x ∈ ⋃ i, A i) (h₂ : ∀ (i : I), x ∈ A i → b) : b :=
+    by {simp at h₁, cases h₁ with i h, exact h₂ i h}
+
+    example : ∀ {A : I → J → set U},
+    (⋃ i, ⋂ j, A i j) ⊆ (⋂ j, ⋃ i, A i j) :=
+    begin
+        intros,
+        assume x,
+        assume h,
+        apply Union.elim U h,
+            intros i this,
+            apply Inter.intro U,
+                assume j,
+                apply Union.intro U i,
+                    apply Inter.elim U this,
+    end
+
+    example :  ∃ {I : Type} {J : Type} {U : Type} {A : I → J → set U}, ¬
+    ((⋂ j, ⋃ i, A i j) ⊆ (⋃ i, ⋂ j, A i j)) :=
+    begin
+        intros,
+        apply exists.intro ℕ,
+        apply exists.intro ℕ,
+        apply exists.intro ℕ,
+        -- TODO: Write a counter example
+        sorry,
+    end
+
+
+    example : ∀ {A : I → set U} {B : J → set U},
+    (⋃ i, A i) ∩ (⋃ j, B j) = ⋃ i, ⋃ j, (A i ∩ B j) :=
+    begin
+        intros,
+        apply ext,
+            assume x,
+            split,
+                assume h,
+                cases h,
+                apply Union.elim U h_left,
+                    intros i xinAi,
+                    apply Union.elim U h_right,
+                        intros j xinBj,
+                        apply Union.intro U,
+                            apply Union.intro U,
+                                split,
+                                    assumption,
+                                    assumption,
+
+                assume h,
+                apply Union.elim U h,
+                    intros i _,
+                    apply Union.elim U a,
+                        intros j xinAiBj,
+                        split,
+                            apply Union.intro U,
+                                exact xinAiBj.1,
+                        
+                            apply Union.intro U,
+                                 exact xinAiBj.2,
+    end
+end
+
 local infix `×` : 50 := set.prod
 
 -- 11.
@@ -233,7 +314,7 @@ begin
 end
 
 -- 12.
-example : (A ∩ B) × (C ∩ D)=(A × C) ∩ (B × D) :=
+example : (A ∩ B) × (C ∩ D) = (A × C) ∩ (B × D) :=
 begin
     apply ext,
     assume x,
