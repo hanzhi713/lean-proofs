@@ -11,4 +11,13 @@ begin
     have zeqo : 0 = 1 := congr_arg f h,
     show false, from zneqo zeqo
 end
+
 theorem oneqt' : 1 ≠ 2.
+
+theorem oneqt'' : 1 ≠ 2 := dec_trivial
+
+theorem oneqt''' : 1 ≠ 2 :=
+begin
+    assume h,
+    cases h,
+end
