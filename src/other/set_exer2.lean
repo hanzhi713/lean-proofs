@@ -105,7 +105,7 @@ section
         have xinC := h.1,
         apply Union.elim h.2,
             intros i xinAi,
-            apply Union.intro,
+            apply Union.intro i,
                 exact ⟨xinC, xinAi⟩,
     end
     -- END

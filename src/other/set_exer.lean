@@ -245,17 +245,79 @@ section
                     apply Inter.elim U this,
     end
 
-    example :  ∃ {I : Type} {J : Type} {U : Type} {A : I → J → set U}, ¬
-    ((⋂ j, ⋃ i, A i j) ⊆ (⋃ i, ⋂ j, A i j)) :=
+    /-
+    A counter-example of the reverse statement (⋂ j, ⋃ i, A i j) ⊆ (⋃ i, ⋂ j, A i j):
+
+    let A be a array of array of sets of naturals defined below
+    [[{1}, {2}],
+     [{2}, {3}]]
+    So A : ℕ → ℕ → set ℕ is indexed by I J : list ℕ := [0, 1]
+    ⋂ j, ⋃ i, A i j = ({1} ∪ {2}) ∩ ({2} ∪ {3}) = {2}
+    ⋃ i, ⋂ j, A i j = ({1} ∩ {2}) ∪ ({2} ∩ {3}) = ∅
+
+    if (⋂ j, ⋃ i, A i j) ⊆ (⋃ i, ⋂ j, A i j), then {2} ⊆ ∅, which is not true.
+
+    I actually don't know the correct  way to create a indexed set, 
+    so I used a complicated workaround to finish the proof in Lean
+    -/
+
+    -- define Aij as a list of list of sets of naturals
+    def Aij : list (list (set ℕ)) := [[{1}, {2}],
+                                     [{2}, {3}]]
+
+    -- define a functions that convert booleans to 0 and 1
+    def bool_to_nat : bool → ℕ
+    | tt := 1
+    | ff := 0
+
+    -- define A'' as a set indexed by two boolean values
+    -- in this case, i and j can take only two possible values, namely ff and tt,
+    -- corresponding to the index 0 and 1
+    def A'' : bool → bool → set ℕ :=
     begin
-        intros,
-        apply exists.intro ℕ,
-        apply exists.intro ℕ,
-        apply exists.intro ℕ,
-        -- TODO: Write a counter example
-        sorry,
+        assume i j,
+        -- How to get the nth element from a list? I actually don't know.
+        have : list (set ℕ),
+            exact option.get_or_else (Aij.nth (bool_to_nat i)) [∅],
+        exact option.get_or_else (this.nth (bool_to_nat j)) ∅,
     end
 
+    example : ∃ {I : Type} {J : Type} {U : Type} {A : I → J → set U}, ¬
+    ((⋂ j, ⋃ i, A i j) ⊆ (⋃ i, ⋂ j, A i j)) :=
+    begin
+        apply exists.intro bool,
+        apply exists.intro bool,
+        apply exists.intro ℕ,
+        apply exists.intro A'',
+        assume h,
+        have : 2 ∈ (⋂ j, ⋃ i, A'' i j),
+            assume s,
+            assume z,
+            apply exists.elim z,
+                intros j a_1,
+                rw a_1,
+                cases j,
+                    apply Union.intro,
+                        show bool, from tt,
+                        left, trivial,
+                    apply Union.intro,
+                        show bool, from ff,
+                        left, trivial,
+
+        have : 2 ∈ (⋃ i, ⋂ j, A'' i j),
+            from h this,
+    
+        apply Union.elim ℕ this,    
+            assume i,
+            assume h2,
+            have h3 : 2 ∈ A'' i tt,
+                apply Inter.elim ℕ h2,
+            have h4 : 2 ∈ A'' i ff,
+                apply Inter.elim ℕ h2,
+            cases i,
+                repeat {cases h4},
+                repeat {cases h3},
+    end
 
     example : ∀ {A : I → set U} {B : J → set U},
     (⋃ i, A i) ∩ (⋃ j, B j) = ⋃ i, ⋃ j, (A i ∩ B j) :=
@@ -270,8 +332,8 @@ section
                     intros i xinAi,
                     apply Union.elim U h_right,
                         intros j xinBj,
-                        apply Union.intro U,
-                            apply Union.intro U,
+                        apply Union.intro U i,
+                            apply Union.intro U j,
                                 split,
                                     assumption,
                                     assumption,
@@ -282,14 +344,33 @@ section
                     apply Union.elim U a,
                         intros j xinAiBj,
                         split,
-                            apply Union.intro U,
+                            apply Union.intro U i,
                                 exact xinAiBj.1,
                         
-                            apply Union.intro U,
+                            apply Union.intro U j,
                                  exact xinAiBj.2,
     end
 end
 
+-- 10.
+example : ∀ a b c d e f: Type, ((a, b, c) = (d, e, f)) ↔ a = d ∧ b = e ∧ c = f :=
+begin
+    intros,
+    split,
+        assume h,
+        cases h,
+        repeat {split},
+        
+        assume h,
+        apply prod.ext,
+            exact h.1,
+            apply prod.ext,
+                exact h.2.1,
+                exact h.2.2,
+end
+
+-- Use set.prod to replace the built-in operator "×", because 
+-- the default × does not represent the Cartesian product between two sets
 local infix `×` : 50 := set.prod
 
 -- 11.

@@ -2,7 +2,7 @@
 
 [dispf_inclass.lean](dispf_inclass.lean) is a proof of ```¬ (∀ (X : Type), ∀ (p q : X → Prop), (∃ x, p x) ∧ (∃ x, q x) → ∃ x, p x ∧ q x)```, which is a disproof of one of the proposition in the fifth in-class exercise.
 
-[emoji_proof.lean](emoji_proof.lean) is a proof of ```∀ p q r, p ∧ (q ∨ r) ↔ (p ∧ q) ∨ (p ∧ r)``` using user-defined emoji notation: ```∀ p q r, p 😂 (q 😶 r) 😆 (p 😂 q) 😶 (p 😂 r) :=```
+[emoji_proof.lean](emoji_proof.lean) is a proof of ```∀ p q r, p ∧ (q ∨ r) ↔ (p ∧ q) ∨ (p ∧ r)``` using user-defined emoji notation: ```∀ p q r, p 😂 (q 😶 r) 😆 (p 😂 q) 😶 (p 😂 r)```
 
 [int_vector3d_cross_full.lean](int_vector3d_cross_full.lean) is a proof of ```∀ vectors a, b ∈ ℤ³, (a × b) ⬝ a = 0``` without using the ```simp``` tactic. [int_vector3d_cross.lean](int_vector3d_cross.lean) is the same proof with the ```simp``` tactic. [real_vector3d_cross.lean](real_vector3d_cross.lean) is the same proof extended to real numbers ```ℝ³```.
 
