@@ -257,7 +257,7 @@ section
 
     if (⋂ j, ⋃ i, A i j) ⊆ (⋃ i, ⋂ j, A i j), then {2} ⊆ ∅, which is not true.
 
-    I actually don't know the correct  way to create a indexed set, 
+    I actually don't know the correct way to create an indexed set, 
     so I used a complicated workaround to finish the proof in Lean
     -/
 
@@ -265,7 +265,7 @@ section
     def Aij : list (list (set ℕ)) := [[{1}, {2}],
                                      [{2}, {3}]]
 
-    -- define a functions that convert booleans to 0 and 1
+    -- define a function that converts booleans to 0 and 1
     def bool_to_nat : bool → ℕ
     | tt := 1
     | ff := 0
@@ -277,10 +277,13 @@ section
     begin
         assume i j,
         -- How to get the nth element from a list? I actually don't know.
+        -- The following way works anyway
         have : list (set ℕ),
             exact option.get_or_else (Aij.nth (bool_to_nat i)) [∅],
         exact option.get_or_else (this.nth (bool_to_nat j)) ∅,
     end
+
+    #reduce A'' tt ff
 
     example : ∃ {I : Type} {J : Type} {U : Type} {A : I → J → set U}, ¬
     ((⋂ j, ⋃ i, A i j) ⊆ (⋃ i, ⋂ j, A i j)) :=
@@ -297,16 +300,14 @@ section
                 intros j a_1,
                 rw a_1,
                 cases j,
-                    apply Union.intro,
-                        show bool, from tt,
+                    apply Union.intro ℕ tt,
                         left, trivial,
-                    apply Union.intro,
-                        show bool, from ff,
+                    apply Union.intro ℕ ff,
                         left, trivial,
 
         have : 2 ∈ (⋃ i, ⋂ j, A'' i j),
             from h this,
-    
+            
         apply Union.elim ℕ this,    
             assume i,
             assume h2,
