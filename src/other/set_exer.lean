@@ -272,17 +272,19 @@ section
 
     -- define A'' as a set indexed by two boolean values
     -- in this case, i and j can take only two possible values, namely ff and tt,
-    -- corresponding to the index 0 and 1
+    -- corresponding to indices 0 and 1
     def A'' : bool → bool → set ℕ :=
     begin
         assume i j,
         -- How to get the nth element from a list? I actually don't know.
         -- The following way works anyway
         have : list (set ℕ),
-            exact option.get_or_else (Aij.nth (bool_to_nat i)) [∅],
-        exact option.get_or_else (this.nth (bool_to_nat j)) ∅,
+            exact option.iget (Aij.nth (bool_to_nat i)),
+        exact option.iget (this.nth (bool_to_nat j)),
     end
 
+    -- Now, A'' tt ff is the element at the second row and first column of A'',
+    -- which is {2}, or in Lean's notation, λ (b : ℕ), b = 2 ∨ false
     #reduce A'' tt ff
 
     example : ∃ {I : Type} {J : Type} {U : Type} {A : I → J → set U}, ¬
