@@ -9,3 +9,7 @@
 [pf_1_not_eq_2.lean](pf_1_not_eq_2.lean) contains multiple equivalent proofs of the proposition ```1 ≠ 2```.
 
 [set_exer.lean](set_exer.lean) and [set_exer2.lean](set_exer2.lean) contains the answers to the [chapter 11](https://leanprover.github.io/logic_and_proof/sets.html#exercises) and [chapter 12](https://leanprover.github.io/logic_and_proof/sets_in_lean.html#exercises) exercises  of the book [Logic and Proof](https://leanprover.github.io/logic_and_proof) respectively.
+
+[odd_and_even.lean](odd_and_even.lean) contains the proof that all integers are either even or odd and cannot be both.
+
+[odd_and_even_nat.lean](odd_and_even_nat.lean) contains the proof that all natural numbers are either even or odd and cannot be both. It also contains the proof for a part of the question 5 of [chapter 13](https://leanprover.github.io/logic_and_proof/relations.html) of the book [Logic and Proof](https://leanprover.github.io/logic_and_proof)
