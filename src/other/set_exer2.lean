@@ -139,5 +139,30 @@ section
         have : A ∈ 𝒫 B := h this,
         assumption, -- note : A ∈ 𝒫 B is equivalent to A ⊆ B
     end
-    -- END
+    
+    example : 𝒫 (A ∩ B) = 𝒫 A ∩ 𝒫 B :=
+    begin
+        apply set.ext,
+            assume x,
+            split,
+                assume h,
+                split,
+                    assume a,
+                    assume h1,
+                    have : a ∈ A ∩ B := h h1,
+                    exact this.1,
+                
+                    assume a,
+                    assume h1,
+                    have : a ∈ A ∩ B := h h1,
+                    exact this.2,
+            
+                assume h,
+                cases h with xinPa xinPb,
+                    assume a,
+                    assume h1 : a ∈ x,
+                    split,
+                        exact xinPa h1,
+                        exact xinPb h1,
+    end
 end
