@@ -5,7 +5,7 @@ import data.set
 def odd : ℕ → Prop := λ n, ∃ m, n = 2 * m + 1
 def even : ℕ → Prop := λ n, ∃ m, n = 2 * m
 
-example : ∀ n, (even n ∨ odd n) :=
+theorem even_or_odd : ∀ n, (even n ∨ odd n) :=
 begin
     assume n,
     apply @nat.rec_on (λ n, even n ∨ odd n),
@@ -54,18 +54,52 @@ begin
                     apply exists.intro (m - 1),
                         have : k = 2 * m - 1 := congr_arg f h2,
                         rw this,
-                            cases m,
-                                trivial,
+                        cases m,
+                            trivial,
 
-                                simp,
-                                calc
-                                    2 * nat.succ m - 1 = 2 * (m + 1) - 1 : by trivial
-                                    ... = 2 * m + 2 * 1 - 1 : by rw mul_add
-                                    ... = 2 * m + (2 * 1 - 1) : by rw (@nat.add_sub_assoc (2*1) 1 dec_trivial)
-                                    ... = 1 + 2 * m : by simp,
+                            simp,
+                            calc
+                                2 * nat.succ m - 1 = 2 * (m + 1) - 1 : by trivial
+                                ... = 2 * m + 2 * 1 - 1 : by rw mul_add
+                                ... = 2 * m + (2 * 1 - 1) : by rw (@nat.add_sub_assoc (2*1) 1 dec_trivial)
+                                ... = 1 + 2 * m : by simp,
         contradiction
 
 end
+
+theorem not_even_odd: ∀ n, ¬ even n ↔ odd n :=
+begin
+    assume n,
+    split,
+        assume not_even,
+        have h := even_or_odd n,
+        cases h,
+            contradiction,
+            assumption,
+
+        assume oddn,
+        assume evenn,
+        have h := not_both_even_and_odd n,
+        exact h ⟨evenn, oddn⟩
+end
+
+theorem not_odd_even: ∀ n, ¬ odd n ↔ even n :=
+begin
+    assume n,
+    split,
+        assume not_odd,
+        have h := even_or_odd n,
+        cases h,
+            assumption,
+            contradiction,
+
+        assume evenn,
+        assume oddn,
+        have h := not_both_even_and_odd n,
+        exact h ⟨evenn, oddn⟩
+end
+
+namespace hidden
 
 def tilda : ℕ → ℕ → Prop := λ m n, ((even m) ∧ (n = m + 1)) ∨ ((odd m) ∧ n = m - 1) ∨ (m = n)
 
@@ -153,3 +187,5 @@ begin
                             right, right, 
                             rw hi,
 end
+
+end hidden
