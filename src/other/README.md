@@ -14,6 +14,8 @@
 
 [odd_and_even_nat.lean](odd_and_even_nat.lean) contains the proof that all natural numbers are either even or odd and cannot be both. It also contains the proof for a part of the question 5 of [chapter 13](https://leanprover.github.io/logic_and_proof/relations.html) of the book [Logic and Proof](https://leanprover.github.io/logic_and_proof)
 
+[n_sq_even_n_even.lean](n_sq_even_n_even.lean) is the proof that n^2 is even if and only if n is even.
+
 [nat_prod.lean](nat_prod.lean) is the proof that the product of an odd number and an even number is an even number
 
 [relations.lean](relations.lean) contains the proof of the exercise questions at the end of [chapter 13](https://leanprover.github.io/logic_and_proof/relations.html) of the book [Logic and Proof](https://leanprover.github.io/logic_and_proof)
