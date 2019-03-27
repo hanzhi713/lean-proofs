@@ -421,4 +421,44 @@ end
 
 -- 13. See set_exer2
 
+-- some extra ones
+example : A = B ↔ (A ∩ -B) = ∅ ∧ (-A ∩ B) = ∅ :=
+begin
+    split,
+        assume aeqb,
+        split,
+            repeat {            
+                apply ext,
+                assume x,
+                split,
+                    assume h,
+                    rw aeqb at h,
+                    cases h,
+                    contradiction,
+                
+                    assume h,
+                    exact false.elim h,
+            },
+
+            assume h,
+            cases h,
+            apply ext,
+            assume x,
+            split,
+                assume xina,
+                cases em (x ∈ B) with xinb xninb,
+                    assumption,
+                    have h2 := ((set.ext_iff (A ∩ -B) ∅).1 h_left x).1,
+                    have : x ∈ A ∩ (-B) := ⟨xina, xninb⟩,
+                    exact false.elim (h2 this),
+                
+                assume xinb,
+                cases em (x ∈ A) with xina xnina,
+                    assumption,
+                    have h2 := ((set.ext_iff (-A ∩ B) ∅).1 h_right x).1,
+                    have : x ∈ -A ∩ B := ⟨xnina, xinb⟩,
+                    exact false.elim (h2 this),
+end
+
 #check @set.prod
+#check set.ext
